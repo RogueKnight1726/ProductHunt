@@ -24,13 +24,23 @@ class BottomBarCell: UICollectionViewCell{
         }
     }
     
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-        initViews()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        icon = UIImageView()
+        self.addSubview(icon)
+        descriptionLabel = UILabel()
+        self.addSubview(descriptionLabel)
     }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        initViews()
     }
 }
 
@@ -41,8 +51,7 @@ extension BottomBarCell{
     
     func initViews(){
         
-        icon = UIImageView()
-        self.addSubview(icon)
+        
         icon.translatesAutoresizingMaskIntoConstraints = false
         [icon.heightAnchor.constraint(equalToConstant: 40),
          icon.widthAnchor.constraint(equalToConstant: 40),
@@ -52,8 +61,7 @@ extension BottomBarCell{
         icon.image = UIImage.init(named: "bottomHomeImage")
         icon.alpha = 0.3
         
-        descriptionLabel = UILabel()
-        self.addSubview(descriptionLabel)
+        
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         [descriptionLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 0),
          descriptionLabel.centerYAnchor.constraint(equalTo: self.bottomAnchor, constant: 20)].forEach({$0.isActive = true})

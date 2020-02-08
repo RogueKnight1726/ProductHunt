@@ -12,21 +12,50 @@ import WebKit
 
 class PostCollectionCell: UICollectionViewCell{
     
-    
+    var titleLabel: UILabel!
+    var subTitleLabel: UILabel!
     var baseView: BaseView!
-    var model: Post?
+    var commentNumberLabel: UILabel!
+    var commentIcon: UIImageView!
+    var model: Post?{
+        didSet{
+            subTitleLabel.text = model?.tagline ?? ""
+            titleLabel.text = model?.name ?? ""
+            commentNumberLabel.text = "\(model?.comments_count ?? 0)"
+        }
+    }
     var thumbnailImageView: UIImageView!
-    var backColor: UIColor!
+    var backColor: UIColor!{
+        didSet{
+            baseView.setColorToBaseView(color: backColor)
+        }
+    }
     
     
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-        initViews()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        baseView = BaseView.init(with: .white, circular: false, shadow: true, borderColor: nil, borderThickness: nil)
+        self.addSubview(baseView)
+        titleLabel = UILabel()
+        self.addSubview(titleLabel)
+        subTitleLabel = UILabel()
+        self.addSubview(subTitleLabel)
+        commentIcon = UIImageView()
+        self.addSubview(commentIcon)
+        commentNumberLabel = UILabel()
+        self.addSubview(commentNumberLabel)
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        initViews()
     }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    
 }
 
 
@@ -36,8 +65,8 @@ extension PostCollectionCell{
     
     
     func initViews(){
-        baseView = BaseView.init(with: backColor, circular: false, shadow: true, borderColor: nil, borderThickness: nil)
-        self.addSubview(baseView)
+        
+        
         baseView.translatesAutoresizingMaskIntoConstraints = false
         [baseView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0),
          baseView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0),
@@ -45,20 +74,17 @@ extension PostCollectionCell{
          baseView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0)].forEach({$0.isActive = true})
         
         
-        let titleLabel = UILabel()
-        self.addSubview(titleLabel)
+        
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         [titleLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8),
          titleLabel.bottomAnchor.constraint(equalTo: self.centerYAnchor, constant: 0),
          titleLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)].forEach({$0.isActive  = true})
-        titleLabel.text = model?.name ?? ""
         titleLabel.numberOfLines = 2
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.textColor = .white
         titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         
-        let subTitleLabel = UILabel()
-        self.addSubview(subTitleLabel)
+        
         subTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         [subTitleLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor, constant: 0),
          subTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
@@ -67,11 +93,10 @@ extension PostCollectionCell{
         subTitleLabel.lineBreakMode = .byTruncatingTail
         subTitleLabel.font = UIFont.systemFont(ofSize: 13, weight: .light)
         subTitleLabel.textColor = .white
-        subTitleLabel.text = model?.tagline ?? ""
         
         
-        let commentIcon = UIImageView()
-        self.addSubview(commentIcon)
+        
+        
         commentIcon.translatesAutoresizingMaskIntoConstraints = false
         [commentIcon.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 16),
          commentIcon.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
@@ -80,12 +105,10 @@ extension PostCollectionCell{
         commentIcon.image = UIImage.init(named: "commentIcon")
         commentIcon.contentMode = .scaleAspectFit
         
-        let commentNumberLabel = UILabel()
-        self.addSubview(commentNumberLabel)
+        
         commentNumberLabel.translatesAutoresizingMaskIntoConstraints = false
         [commentNumberLabel.leftAnchor.constraint(equalTo: commentIcon.rightAnchor, constant: 4),
          commentNumberLabel.centerYAnchor.constraint(equalTo: commentIcon.centerYAnchor, constant: 0)].forEach({$0.isActive = true})
-        commentNumberLabel.text = "\(model?.comments_count ?? 0)"
         commentNumberLabel.textColor = .white
         commentNumberLabel.font = UIFont.systemFont(ofSize: 15, weight: .light)
     }

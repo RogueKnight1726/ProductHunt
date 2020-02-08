@@ -16,6 +16,7 @@ extension String{
     struct URLScheme{
         static let BASE_URL = "https://api.producthunt.com/v1/"
         static let POSTS = BASE_URL + "posts"
+        static let COMMENTS = BASE_URL + "/posts/{POST_ID}/comments?page={PAGENUMBER}&per_page={PAGESIZE}"
     }
 }
 
@@ -31,6 +32,7 @@ extension UIColor{
         static let cellTwoColor = UIColor(red:0.31, green:0.29, blue:0.52, alpha:1.0)
         static let cellThreeColor = UIColor(red:0.94, green:0.68, blue:0.44, alpha:1.0)
         static let cellFourColor = UIColor(red:0.75, green:0.75, blue:0.82, alpha:1.0)
+        static let replyCellBackgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
     }
 }
 

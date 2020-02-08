@@ -19,9 +19,12 @@ struct Comment: Codable{
     var body: String?
     var parent_comment_id: Int?
     var votes: Int?
-    var user: User
+    var user: User?
     var maker: Bool?
     var child_comments: [Comment]?
+    
+    var isParentComment: Bool?
+    
 }
 
 
@@ -37,6 +40,6 @@ struct ProfilePicture: Codable{
 
 extension ProfilePicture {
     enum CodingKeys: String, CodingKey {
-        case url = "60px"
+        case url = "220px"
     }
 }

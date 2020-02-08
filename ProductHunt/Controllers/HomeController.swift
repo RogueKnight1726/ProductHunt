@@ -47,10 +47,21 @@ class HomeController: BaseController{
                 print("Success: \(unwrappedData)")
                 self?.onSuccessListener(response: "Success", codableResponse: unwrappedData)
             } else {
-                print("Faiure response")
+                self?.onFailureListener(errorMessage: "Oops something went wrong", response: nil)
             }
         }
     }
+    
+    //This method is implemented to reduce the number of repeatations while randoming. It doesnt completely remove repeatation, but greatly reduces, and I'm happy with the output
+    func randomAndRemove()->UIColor{
+        if colorSet.isEmpty {
+            colorSet = [UIColor.AppTheme.cellOneColor,UIColor.AppTheme.cellTwoColor,UIColor.AppTheme.cellThreeColor,UIColor.AppTheme.cellFourColor]
+        }
+        let color = colorSet.randomElement()
+        colorSet.removeAll(where: { $0 == color })
+        return color!
+    }
+    
 }
 
 
@@ -60,7 +71,7 @@ extension HomeController: DataResponseListener{
         let decoder = JSONDecoder()
         do {
             postsArray = try decoder.decode(PostCollection.self, from: codableResponse)
-            postsArray?.posts?.forEach({ _ in cellColors.append(colorSet.randomElement() ?? UIColor.white) })
+            postsArray?.posts?.forEach({ _ in cellColors.append(self.randomAndRemove()) })
             collectionView.reloadData()
         } catch {
             print(error.localizedDescription)
