@@ -12,7 +12,7 @@ class BottomBar: UIView{
     
     var layout: UICollectionViewFlowLayout?
     var collectionView: UICollectionView!
-    let barItems: [BottomBarItems] = [.Home,.Search,.Credit]
+    let barItems: [BottomBarItems] = [.Home,.Search,.AboutMe]
     weak var itemSelectionDelegate: BottomBarSelectionProtocol?
     
     
@@ -69,6 +69,7 @@ extension BottomBar: UICollectionViewDelegate, UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SomeIdentifier", for: indexPath) as! BottomBarCell
+        cell.item = barItems[indexPath.row]
         return cell
     }
     
@@ -79,10 +80,10 @@ extension BottomBar: UICollectionViewDelegate, UICollectionViewDataSource{
 }
 
 
-enum BottomBarItems{
-    case Home
-    case Search
-    case Credit
+enum BottomBarItems: String{
+    case Home = "bottomHomeImage"
+    case Search = "search"
+    case AboutMe = "aboutMe"
 }
 
 

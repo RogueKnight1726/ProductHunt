@@ -49,6 +49,13 @@ class HomeController: BaseController{
     
     
     func getData(){
+        
+        if !Connectivity.isConnectedToInternet{
+            readOfflineData()
+            return
+        }
+        
+        
         var postsUrlString = String.URLScheme.POSTS
         if selectedDayOffset != 0{
             postsUrlString = postsUrlString + "?days_ago=\(selectedDayOffset)"
@@ -78,19 +85,48 @@ class HomeController: BaseController{
                 self?.onFailureListener(errorMessage: "Oops something went wrong", response: nil)
             }
         }
+    }
+    
+    
+    func readOfflineData(){
+        let fileManager = FileManager.default
+        let doumentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+        let filePath = doumentDirectoryPath.appendingPathComponent("SavedResponse.json")
+        if fileManager.fileExists(atPath: filePath){
+            do{
+                let decoder = JSONDecoder()
+                let codableData = try Data(contentsOf: URL.init(fileURLWithPath: filePath))
+                postsArray = try decoder.decode(PostCollection.self, from: codableData)
+                postsArray?.posts?.forEach({ _ in cellColors.append(self.randomAndRemove()) })
+                collectionView.reloadData()
+            } catch let error{
+                print("Error: \(error)")
+            }
+        } else {
+            print("Show error saying there is no file")
+        }
         
-//        WebApiClient.shared.requestApi(with: postsUrl, method: .get, params: nil) { [weak self] (error, success, data) in
-//            if success{
-//                guard let unwrappedData = data else {
-//                    self?.onFailureListener(errorMessage: "Oops something went wrong", response: nil)
-//                    return
-//                }
-//                print("Success: \(unwrappedData)")
-//                self?.onSuccessListener(response: "Success", codableResponse: unwrappedData)
-//            } else {
-//                self?.onFailureListener(errorMessage: "Oops something went wrong", response: nil)
-//            }
-//        }
+    }
+    
+    
+    func saveDataToLocal(data: Data){
+        let fileManager = FileManager.default
+        let doumentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+        let filePath = "file://" + doumentDirectoryPath.appendingPathComponent("SavedResponse.json")
+        if fileManager.fileExists(atPath: filePath){
+            do{
+                try fileManager.removeItem(atPath: filePath)
+            }catch let error {
+                print("Error: \(error)")
+            }
+        }
+        do{
+            try data.write(to: URL.init(string: filePath)!)
+            print("Saved to Directory")
+        } catch let error {
+            print("Error:  \(error)")
+        }
+        
     }
     
     
@@ -165,6 +201,9 @@ extension HomeController: DataResponseListener{
     func onSuccessListener(response: Any, codableResponse: Data) {
         let decoder = JSONDecoder()
         do {
+            if selectedDayOffset == 0 {
+                saveDataToLocal(data: codableResponse)
+            }
             postsArray = try decoder.decode(PostCollection.self, from: codableResponse)
             postsArray?.posts?.forEach({ _ in cellColors.append(self.randomAndRemove()) })
             collectionView.reloadData()

@@ -12,6 +12,7 @@
 		58138C2823EE668000A01953 /* PostDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58138C2723EE668000A01953 /* PostDetailController.swift */; };
 		58138C6A23EE935200A01953 /* ThreadReplyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58138C6923EE935200A01953 /* ThreadReplyCell.swift */; };
 		58138C6C23EEA10C00A01953 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58138C6B23EEA10C00A01953 /* Comment.swift */; };
+		58138C7123EEF6B500A01953 /* SearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58138C7023EEF6B500A01953 /* SearchResultCell.swift */; };
 		58A7AFDC23EDED7D0009B668 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A7AFDB23EDED7D0009B668 /* AppDelegate.swift */; };
 		58A7AFDE23EDED7D0009B668 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A7AFDD23EDED7D0009B668 /* SceneDelegate.swift */; };
 		58A7AFE323EDED7D0009B668 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 58A7AFE123EDED7D0009B668 /* Main.storyboard */; };
@@ -62,6 +63,7 @@
 		58138C2723EE668000A01953 /* PostDetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailController.swift; sourceTree = "<group>"; };
 		58138C6923EE935200A01953 /* ThreadReplyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadReplyCell.swift; sourceTree = "<group>"; };
 		58138C6B23EEA10C00A01953 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		58138C7023EEF6B500A01953 /* SearchResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultCell.swift; sourceTree = "<group>"; };
 		586C60270C3F3BF14276F6E3 /* Pods_ProductHuntTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ProductHuntTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58A7AFD823EDED7D0009B668 /* ProductHunt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProductHunt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58A7AFDB23EDED7D0009B668 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 				58A7B02523EE04F00009B668 /* PostCollectionCell.swift */,
 				58A7B02923EE30FF0009B668 /* BottomBarCell.swift */,
 				58138C6923EE935200A01953 /* ThreadReplyCell.swift */,
+				58138C7023EEF6B500A01953 /* SearchResultCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -501,6 +504,7 @@
 				58A7B01423EDF2EB0009B668 /* Connectivity.swift in Sources */,
 				58A7AFDE23EDED7D0009B668 /* SceneDelegate.swift in Sources */,
 				58A7B00D23EDEDA20009B668 /* HomeController.swift in Sources */,
+				58138C7123EEF6B500A01953 /* SearchResultCell.swift in Sources */,
 				58A7B02423EE020D0009B668 /* BaseView.swift in Sources */,
 				58138C2823EE668000A01953 /* PostDetailController.swift in Sources */,
 				58A7B01C23EDF7E00009B668 /* Posts.swift in Sources */,

@@ -14,6 +14,11 @@ class BottomBarCell: UICollectionViewCell{
     
     var icon: UIImageView!
     var descriptionLabel: UILabel!
+    var item: BottomBarItems!{
+        didSet{
+            print("Model Recieved")
+        }
+    }
     
     override var isSelected: Bool{
         didSet{
@@ -53,19 +58,30 @@ extension BottomBarCell{
         
         
         icon.translatesAutoresizingMaskIntoConstraints = false
-        [icon.heightAnchor.constraint(equalToConstant: 40),
-         icon.widthAnchor.constraint(equalToConstant: 40),
+        [icon.heightAnchor.constraint(equalToConstant: 30),
+         icon.widthAnchor.constraint(equalToConstant: 30),
          icon.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0),
          icon.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 0)].forEach({$0.isActive = true})
         icon.contentMode = .scaleAspectFit
-        icon.image = UIImage.init(named: "bottomHomeImage")
+        icon.image = UIImage.init(named: item.rawValue)
         icon.alpha = 0.3
         
         
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         [descriptionLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 0),
          descriptionLabel.centerYAnchor.constraint(equalTo: self.bottomAnchor, constant: 20)].forEach({$0.isActive = true})
-        descriptionLabel.text = "Home"
+        var descriptiontext = ""
+        switch item{
+            case .Home:
+                descriptiontext = "HOME"
+            case .Search:
+                descriptiontext = "SEARCH"
+            case .AboutMe:
+                descriptiontext = "ME"
+            default:
+                break
+        }
+        descriptionLabel.text = descriptiontext
         descriptionLabel.textColor = UIColor.AppTheme.bottomBarSelectionColoe
         descriptionLabel.font = UIFont.systemFont(ofSize: 11, weight: .light)
     }
