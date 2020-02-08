@@ -11,7 +11,7 @@ import WebKit
 
 class HomeController: BaseController{
     
-    var bottoBar: BaseView!
+    
     var layout: UICollectionViewFlowLayout!
     var collectionView: UICollectionView!
     var postsArray: PostCollection?
@@ -21,7 +21,21 @@ class HomeController: BaseController{
     var cellColors = [UIColor]()
     var colorSet = [UIColor.AppTheme.cellOneColor,UIColor.AppTheme.cellTwoColor,UIColor.AppTheme.cellThreeColor,UIColor.AppTheme.cellFourColor]
     weak var selectionDelegate: PostSelectionProtocol?
+    var calendarIcon: UIImageView!
     
+    
+    var daySelectionDescriptionLabel: UILabel!
+    var dayPickerHolder: BaseView?
+    let dismissView = UIView()
+    var pickerView: UIPickerView!
+    
+    var requestQueue = [String]()
+    
+    var selectedDayOffset = 0 {
+        didSet{
+            getData()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,25 +46,106 @@ class HomeController: BaseController{
     }
     
     
+    
+    
     func getData(){
-        let postsUrlString = String.URLScheme.POSTS
+        var postsUrlString = String.URLScheme.POSTS
+        if selectedDayOffset != 0{
+            postsUrlString = postsUrlString + "?days_ago=\(selectedDayOffset)"
+        }
         guard let postsUrl = URL.init(string: postsUrlString) else {
             print("Invalid URL")
             return
         }
-        WebApiClient.shared.requestApi(with: postsUrl, method: .get, params: nil) { [weak self] (error, success, data) in
-            if success{
-                guard let unwrappedData = data else {
-                    self?.onFailureListener(errorMessage: "Oops something went wrong", response: nil)
-                    return
+        
+        
+        let uuidString = UUID().uuidString
+        requestQueue.append(uuidString)
+        
+        WebApiClient.shared.requestApiWithUUid(with: postsUrl, method: .get, params: nil, requestId: uuidString) { [weak self] (errorMessage, success, data, id) in
+            if !(self?.requestQueue.isEmpty ?? true){
+                if self?.requestQueue.last == id{
+                    self?.requestQueue.removeAll()
+                    if !success {
+                        self?.onFailureListener(errorMessage: "Oops something went wrong", response: false)
+                        return
+                    }
+                    self?.onSuccessListener(response: "Success", codableResponse: data!)
+                } else {
+                    self?.requestQueue.removeAll(where: { $0 == id })
                 }
-                print("Success: \(unwrappedData)")
-                self?.onSuccessListener(response: "Success", codableResponse: unwrappedData)
             } else {
                 self?.onFailureListener(errorMessage: "Oops something went wrong", response: nil)
             }
         }
+        
+//        WebApiClient.shared.requestApi(with: postsUrl, method: .get, params: nil) { [weak self] (error, success, data) in
+//            if success{
+//                guard let unwrappedData = data else {
+//                    self?.onFailureListener(errorMessage: "Oops something went wrong", response: nil)
+//                    return
+//                }
+//                print("Success: \(unwrappedData)")
+//                self?.onSuccessListener(response: "Success", codableResponse: unwrappedData)
+//            } else {
+//                self?.onFailureListener(errorMessage: "Oops something went wrong", response: nil)
+//            }
+//        }
     }
+    
+    
+    //Date Selection
+    @objc func calendarTapped(){
+        view.addSubview(dismissView)
+        dismissView.alpha = 0.14
+        dismissView.backgroundColor = .black
+        dismissView.translatesAutoresizingMaskIntoConstraints = false
+        [dismissView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
+         dismissView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+         dismissView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+         dismissView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0)].forEach({$0.isActive = true})
+        dismissView.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(dimissDateSelectionView(sender:))))
+        
+        dayPickerHolder = BaseView.init(with: .white, circular: false, shadow: false, borderColor: nil, borderThickness: nil)
+        self.view.addSubview(dayPickerHolder!)
+        dayPickerHolder?.translatesAutoresizingMaskIntoConstraints = false
+        [dayPickerHolder?.leftAnchor.constraint(equalTo: dismissView.leftAnchor, constant: 0),
+         dayPickerHolder?.rightAnchor.constraint(equalTo: dismissView.rightAnchor, constant: 0),
+         dayPickerHolder?.bottomAnchor.constraint(equalTo: dismissView.bottomAnchor, constant: 0),
+         dayPickerHolder?.heightAnchor.constraint(equalToConstant: 300)].forEach({$0?.isActive = true})
+        
+        daySelectionDescriptionLabel = UILabel()
+        self.view?.addSubview(daySelectionDescriptionLabel)
+        daySelectionDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        [daySelectionDescriptionLabel.leftAnchor.constraint(equalTo: dayPickerHolder!.leftAnchor, constant: 16),
+         daySelectionDescriptionLabel.topAnchor.constraint(equalTo: dayPickerHolder!.topAnchor, constant: 16)].forEach({$0?.isActive = true})
+        daySelectionDescriptionLabel.text = "You may travel back in time and see the past posts"
+        daySelectionDescriptionLabel.textColor = .gray
+        daySelectionDescriptionLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        
+        pickerView = UIPickerView()
+        dayPickerHolder?.addSubview(pickerView)
+        pickerView.translatesAutoresizingMaskIntoConstraints = false
+        [pickerView.leftAnchor.constraint(equalTo: dayPickerHolder!.leftAnchor, constant: 16), //force unwrapped for as initiated just above.
+         pickerView.rightAnchor.constraint(equalTo: dayPickerHolder!.rightAnchor, constant: -16),
+         pickerView.topAnchor.constraint(equalTo: dayPickerHolder!.topAnchor, constant: 16),
+         pickerView.heightAnchor.constraint(equalToConstant: 240)].forEach({$0.isActive = true})
+        pickerView.setValue(UIColor.black, forKey: "textColor")
+        pickerView.setValue(UIColor.white, forKey: "backgroundColor")
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        
+        
+    }
+    @objc func dimissDateSelectionView(sender: UITapGestureRecognizer){
+        self.dismissView.removeFromSuperview()
+        dayPickerHolder?.removeFromSuperview()
+        daySelectionDescriptionLabel.removeFromSuperview()
+        
+    }
+    
+    
+    
     
     //This method is implemented to reduce the number of repeatations while randoming. It doesnt completely remove repeatation, but greatly reduces, and I'm happy with the output
     func randomAndRemove()->UIColor{
@@ -85,6 +180,27 @@ extension HomeController: DataResponseListener{
     
 }
 
+
+extension HomeController: UIPickerViewDelegate,UIPickerViewDataSource{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return 4
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if row == 0{
+            return "Today"
+        }
+        return "\(row) \((row > 1) ? "Days ago" : "Day ago")"
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selectedDayOffset = row
+    }
+}
 
 
 
@@ -166,9 +282,20 @@ extension HomeController{
         collectionView.clipsToBounds = false
         collectionView.contentInset = UIEdgeInsets.init(top: 0, left: 16, bottom: 0, right: 0)
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         
-        
-        
+        calendarIcon = UIImageView.init()
+        view.addSubview(calendarIcon)
+        calendarIcon.translatesAutoresizingMaskIntoConstraints = false
+        [calendarIcon.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
+         calendarIcon.topAnchor.constraint(equalTo: greetingsLabel.topAnchor, constant: 0),
+         calendarIcon.heightAnchor.constraint(equalToConstant: 30),
+         calendarIcon.widthAnchor.constraint(equalToConstant: 30)].forEach({$0.isActive = true})
+        calendarIcon.image = UIImage.init(named: "calendarIcon")
+        calendarIcon.contentMode = .scaleAspectFit
+        calendarIcon.isUserInteractionEnabled = true
+        calendarIcon.alpha = 0.7
+        calendarIcon.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(calendarTapped)))
     }
 }
 

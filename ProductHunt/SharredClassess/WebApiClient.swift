@@ -42,6 +42,29 @@ class WebApiClient: NSObject {
                 completion(nil, true, dataResponse)
         }
     }
+    
+    
+    
+    //Method to handle multiple requests at once and give priority to the last requested call
+    func requestApiWithUUid(with url: URL,method: HTTPMethod, params: [String: Any]?,requestId: String ,completion: @escaping (_ error: String?,_ success: Bool,_ data: Data?,_ requestId: String) -> Void) {
+        
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer DKEDMw3RmjOurQxMBZ3r7EQjZd4eOH8Lzu2jTKw1tsQ"
+        ]
+        Alamofire.request(url, method: method
+            , parameters: params, encoding: URLEncoding.default, headers: headers).validate().responseData { (response) in
+
+                if response.result.isFailure{
+                    completion("Error Response", false, nil,requestId)
+                    return
+                }
+                guard let dataResponse = response.data else {
+                    completion("No data response", false, nil,requestId)
+                    return
+                }
+                completion(nil, true, dataResponse,requestId)
+        }
+    }
 }
 
 
