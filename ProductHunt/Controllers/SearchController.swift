@@ -33,5 +33,9 @@ extension SearchController{
         [searchBar.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
          searchBar.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
          searchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 8)].forEach({$0.isActive = true})
+        searchBar.placeholder = "Search for posts"
+        searchBar.barStyle = .default
+        searchBar.searchTextField.backgroundColor = .white
+        searchBar.barTintColor = UIColor.AppTheme.appBackgroundColor
     }
 }

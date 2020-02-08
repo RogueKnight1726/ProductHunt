@@ -13,6 +13,16 @@ import UIKit
 class BottomBarCell: UICollectionViewCell{
     
     var icon: UIImageView!
+    var descriptionLabel: UILabel!
+    
+    override var isSelected: Bool{
+        didSet{
+            UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
+                self.icon.transform = self.isSelected ? CGAffineTransform.init(translationX: 0, y: -40) : .identity
+                self.descriptionLabel.transform = self.isSelected ? CGAffineTransform.init(translationX: 0, y: -40) : .identity
+            }, completion: nil) 
+        }
+    }
     
     override func didMoveToWindow() {
         super.didMoveToWindow()
@@ -41,5 +51,14 @@ extension BottomBarCell{
         icon.contentMode = .scaleAspectFit
         icon.image = UIImage.init(named: "bottomHomeImage")
         icon.alpha = 0.3
+        
+        descriptionLabel = UILabel()
+        self.addSubview(descriptionLabel)
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        [descriptionLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 0),
+         descriptionLabel.centerYAnchor.constraint(equalTo: self.bottomAnchor, constant: 20)].forEach({$0.isActive = true})
+        descriptionLabel.text = "Home"
+        descriptionLabel.textColor = UIColor.AppTheme.bottomBarSelectionColoe
+        descriptionLabel.font = UIFont.systemFont(ofSize: 11, weight: .light)
     }
 }

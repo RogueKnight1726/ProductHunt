@@ -55,6 +55,9 @@ extension BottomBar{
         collectionView.backgroundColor = .clear
         collectionView.delegate = self
         collectionView.dataSource = self
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.collectionView.selectItem(at: IndexPath.init(item: 0, section: 0), animated: true, scrollPosition: .left)
+        }
     }
 }
 

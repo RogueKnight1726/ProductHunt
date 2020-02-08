@@ -45,6 +45,21 @@ extension ParentController: BottomBarSelectionProtocol{
 }
 
 
+extension ParentController: PostSelectionProtocol{
+    func selectedProtocol(with post: Post) {
+        let detailController = PostDetailController()
+        detailController.model = post
+        self.present(detailController, animated: true, completion: nil)
+    }
+    
+    func selectedProtocol(with id: Int) {
+        self.present(PostDetailController(), animated: true, completion: nil)
+    }
+    
+    
+}
+
+
 
 extension ParentController{
     
@@ -74,6 +89,7 @@ extension ParentController{
         homeController.view.topAnchor.constraint(equalTo: parentScrollView.topAnchor, constant: 0).isActive = true
         homeController.view.bottomAnchor.constraint(equalTo: parentScrollView.bottomAnchor, constant: 0).isActive = true
         homeController.view.heightAnchor.constraint(equalTo: parentScrollView.heightAnchor).isActive = true
+        homeController.selectionDelegate = self
         
         searchController = SearchController()
         self.addChild(searchController)

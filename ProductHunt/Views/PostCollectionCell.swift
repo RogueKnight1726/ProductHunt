@@ -16,6 +16,7 @@ class PostCollectionCell: UICollectionViewCell{
     var baseView: BaseView!
     var model: Post?
     var thumbnailImageView: UIImageView!
+    var backColor: UIColor!
     
     
     override func didMoveToWindow() {
@@ -35,7 +36,7 @@ extension PostCollectionCell{
     
     
     func initViews(){
-        baseView = BaseView.init(with: .white, circular: false, shadow: true, borderColor: nil, borderThickness: nil)
+        baseView = BaseView.init(with: backColor, circular: false, shadow: true, borderColor: nil, borderThickness: nil)
         self.addSubview(baseView)
         baseView.translatesAutoresizingMaskIntoConstraints = false
         [baseView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0),
@@ -44,14 +45,49 @@ extension PostCollectionCell{
          baseView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0)].forEach({$0.isActive = true})
         
         
-        thumbnailImageView = UIImageView.init()
-        baseView.addSubview(thumbnailImageView)
-        thumbnailImageView.translatesAutoresizingMaskIntoConstraints = false
-        [thumbnailImageView.leftAnchor.constraint(equalTo: baseView.leftAnchor, constant: 0),
-         thumbnailImageView.rightAnchor.constraint(equalTo: baseView.rightAnchor, constant: 0),
-         thumbnailImageView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 0),
-         thumbnailImageView.bottomAnchor.constraint(equalTo: baseView.bottomAnchor, constant: 0)].forEach({$0.isActive = true})
-        thumbnailImageView.load(url: URL.init(string: model?.thumbnail?.image_url ?? "")!)
+        let titleLabel = UILabel()
+        self.addSubview(titleLabel)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        [titleLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8),
+         titleLabel.bottomAnchor.constraint(equalTo: self.centerYAnchor, constant: 0),
+         titleLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)].forEach({$0.isActive  = true})
+        titleLabel.text = model?.name ?? ""
+        titleLabel.numberOfLines = 2
+        titleLabel.lineBreakMode = .byTruncatingTail
+        titleLabel.textColor = .white
+        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        
+        let subTitleLabel = UILabel()
+        self.addSubview(subTitleLabel)
+        subTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        [subTitleLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor, constant: 0),
+         subTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+         subTitleLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -16)].forEach({$0.isActive = true})
+        subTitleLabel.numberOfLines = 2
+        subTitleLabel.lineBreakMode = .byTruncatingTail
+        subTitleLabel.font = UIFont.systemFont(ofSize: 13, weight: .light)
+        subTitleLabel.textColor = .white
+        subTitleLabel.text = model?.tagline ?? ""
+        
+        
+        let commentIcon = UIImageView()
+        self.addSubview(commentIcon)
+        commentIcon.translatesAutoresizingMaskIntoConstraints = false
+        [commentIcon.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 16),
+         commentIcon.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
+         commentIcon.heightAnchor.constraint(equalToConstant: 18),
+         commentIcon.widthAnchor.constraint(equalToConstant: 18)].forEach({$0.isActive = true})
+        commentIcon.image = UIImage.init(named: "commentIcon")
+        commentIcon.contentMode = .scaleAspectFit
+        
+        let commentNumberLabel = UILabel()
+        self.addSubview(commentNumberLabel)
+        commentNumberLabel.translatesAutoresizingMaskIntoConstraints = false
+        [commentNumberLabel.leftAnchor.constraint(equalTo: commentIcon.rightAnchor, constant: 4),
+         commentNumberLabel.centerYAnchor.constraint(equalTo: commentIcon.centerYAnchor, constant: 0)].forEach({$0.isActive = true})
+        commentNumberLabel.text = "\(model?.comments_count ?? 0)"
+        commentNumberLabel.textColor = .white
+        commentNumberLabel.font = UIFont.systemFont(ofSize: 15, weight: .light)
     }
 }
 

@@ -18,6 +18,9 @@ class HomeController: BaseController{
     var guide: UILayoutGuide!
     var greetingsLabel: UILabel!
     var postHeadline: UILabel!
+    var cellColors = [UIColor]()
+    var colorSet = [UIColor.AppTheme.cellOneColor,UIColor.AppTheme.cellTwoColor,UIColor.AppTheme.cellThreeColor,UIColor.AppTheme.cellFourColor]
+    weak var selectionDelegate: PostSelectionProtocol?
     
     
     override func viewDidLoad() {
@@ -57,6 +60,7 @@ extension HomeController: DataResponseListener{
         let decoder = JSONDecoder()
         do {
             postsArray = try decoder.decode(PostCollection.self, from: codableResponse)
+            postsArray?.posts?.forEach({ _ in cellColors.append(colorSet.randomElement() ?? UIColor.white) })
             collectionView.reloadData()
         } catch {
             print(error.localizedDescription)
@@ -85,7 +89,16 @@ extension HomeController: UICollectionViewDelegate,UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SomeIdentifier", for: indexPath) as! PostCollectionCell
         cell.model = postsArray?.posts?[indexPath.row]
+        cell.backColor = cellColors[indexPath.row]
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let unwrappedPost = postsArray?.posts?[indexPath.row] else {
+            //handle this
+            return
+        }
+        selectionDelegate?.selectedProtocol(with: unwrappedPost)
     }
 }
 
@@ -123,7 +136,7 @@ extension HomeController{
         
         
         layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize.init(width: 130, height: 150)
+        layout.itemSize = CGSize.init(width: 170, height: 150)
         layout.minimumInteritemSpacing = 20
         layout.minimumLineSpacing = 20
         layout.scrollDirection = .horizontal
@@ -141,6 +154,7 @@ extension HomeController{
         collectionView.dataSource = self
         collectionView.clipsToBounds = false
         collectionView.contentInset = UIEdgeInsets.init(top: 0, left: 16, bottom: 0, right: 0)
+        collectionView.showsHorizontalScrollIndicator = false
         
         
         
