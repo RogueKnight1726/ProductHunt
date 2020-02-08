@@ -9,14 +9,27 @@
 import UIKit
 import WebKit
 
-class HomeController: UIViewController{
+class HomeController: BaseController{
     
-    var bottoBar: UIView!
-    
+    var bottoBar: BaseView!
+    var layout: UICollectionViewFlowLayout!
+    var collectionView: UICollectionView!
+    var postsArray: PostCollection?
+    var guide: UILayoutGuide!
+    var greetingsLabel: UILabel!
+    var postHeadline: UILabel!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        initViews()
+        getData()
+    }
+    
+    
+    func getData(){
         let postsUrlString = String.URLScheme.POSTS
         guard let postsUrl = URL.init(string: postsUrlString) else {
             print("Invalid URL")
@@ -37,13 +50,14 @@ class HomeController: UIViewController{
     }
 }
 
+
+
 extension HomeController: DataResponseListener{
     func onSuccessListener(response: Any, codableResponse: Data) {
         let decoder = JSONDecoder()
         do {
-            let model = try decoder.decode(PostCollection.self, from: codableResponse)
-            print("Model : \(model)")
-            print("Recieved Fee Response")
+            postsArray = try decoder.decode(PostCollection.self, from: codableResponse)
+            collectionView.reloadData()
         } catch {
             print(error.localizedDescription)
         }
@@ -65,11 +79,12 @@ extension HomeController: DataResponseListener{
 
 extension HomeController: UICollectionViewDelegate,UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 12
+        return postsArray?.posts?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SomeIdentifier", for: indexPath) as! CollectionCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SomeIdentifier", for: indexPath) as! PostCollectionCell
+        cell.model = postsArray?.posts?[indexPath.row]
         return cell
     }
 }
@@ -81,7 +96,53 @@ extension HomeController: UICollectionViewDelegate,UICollectionViewDataSource{
 
 extension HomeController{
     
+    
     func initViews(){
+        
+        
+        guide = view.safeAreaLayoutGuide
+        greetingsLabel = UILabel()
+        view.addSubview(greetingsLabel)
+        greetingsLabel.translatesAutoresizingMaskIntoConstraints = false
+        [greetingsLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
+         greetingsLabel.topAnchor.constraint(equalTo: guide.topAnchor, constant: 16)].forEach({$0.isActive = true})
+        greetingsLabel.text = "Greetings"
+        greetingsLabel.textColor = .black
+        greetingsLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+        
+        
+        
+        postHeadline = UILabel()
+        view.addSubview(postHeadline)
+        postHeadline.translatesAutoresizingMaskIntoConstraints = false
+        [postHeadline.leftAnchor.constraint(equalTo: greetingsLabel.leftAnchor, constant: 8),
+         postHeadline.topAnchor.constraint(equalTo: greetingsLabel.bottomAnchor, constant: 8)].forEach({$0.isActive = true})
+        postHeadline.text = "Today's posts"
+        postHeadline.font = UIFont.systemFont(ofSize: 18, weight: .light)
+        postHeadline.textColor = .gray
+        
+        
+        layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize.init(width: 130, height: 150)
+        layout.minimumInteritemSpacing = 20
+        layout.minimumLineSpacing = 20
+        layout.scrollDirection = .horizontal
+
+        collectionView = UICollectionView.init(frame: .zero, collectionViewLayout: layout)
+        view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        [collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
+         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+         collectionView.heightAnchor.constraint(equalToConstant: 150),
+         collectionView.topAnchor.constraint(equalTo: postHeadline.bottomAnchor, constant: 16)].forEach({$0.isActive = true})
+        collectionView.backgroundColor = .clear
+        collectionView.register(PostCollectionCell.self, forCellWithReuseIdentifier: "SomeIdentifier")
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.clipsToBounds = false
+        collectionView.contentInset = UIEdgeInsets.init(top: 0, left: 16, bottom: 0, right: 0)
+        
+        
         
     }
 }
