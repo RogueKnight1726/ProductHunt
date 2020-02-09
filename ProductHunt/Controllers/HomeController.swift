@@ -53,13 +53,14 @@ class HomeController: BaseController{
     
     func getData(){
         
-        fetchingData.isHidden = false
+        
         
         if !Connectivity.isConnectedToInternet{
             readOfflineFileData()
             return
         }
         
+        fetchingData.isHidden = false
         
         var postsUrlString = String.URLScheme.POSTS
         if selectedDayOffset != 0{
