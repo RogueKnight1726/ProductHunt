@@ -99,6 +99,7 @@ extension ParentController{
         searchController.view.heightAnchor.constraint(equalTo: homeController.view.heightAnchor).isActive = true
         searchController.view.widthAnchor.constraint(equalTo: homeController.view.widthAnchor).isActive = true
         searchController.view.topAnchor.constraint(equalTo: homeController.view.topAnchor, constant: 0).isActive = true
+        searchController.selectionDelegate = self
         
         creditController = CreditController()
         self.addChild(creditController)
@@ -117,7 +118,7 @@ extension ParentController{
         [bottomBarContainer.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
          bottomBarContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
          bottomBarContainer.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
-         bottomBarContainer.heightAnchor.constraint(equalToConstant: 20 + view.safeAreaInsets.bottom + 40)].forEach({$0.isActive = true})
+         bottomBarContainer.heightAnchor.constraint(equalToConstant: 20 + view.safeAreaInsets.bottom + 60)].forEach({$0.isActive = true})
         
         bottomBar = BottomBar()
         view.addSubview(bottomBar)

@@ -51,7 +51,7 @@ class HomeController: BaseController{
     func getData(){
         
         if !Connectivity.isConnectedToInternet{
-            readOfflineData()
+            readOfflineFileData()
             return
         }
         
@@ -88,23 +88,17 @@ class HomeController: BaseController{
     }
     
     
-    func readOfflineData(){
-        let fileManager = FileManager.default
-        let doumentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-        let filePath = doumentDirectoryPath.appendingPathComponent("SavedResponse.json")
-        if fileManager.fileExists(atPath: filePath){
-            do{
-                let decoder = JSONDecoder()
-                let codableData = try Data(contentsOf: URL.init(fileURLWithPath: filePath))
-                postsArray = try decoder.decode(PostCollection.self, from: codableData)
-                postsArray?.posts?.forEach({ _ in cellColors.append(self.randomAndRemove()) })
-                collectionView.reloadData()
-            } catch let error{
-                print("Error: \(error)")
+    
+    func readOfflineFileData(){
+        
+        FileManagerHelper.shared.readOfflineData { [weak self] (success, collectionResponse) in
+            if success{
+                self?.postsArray = collectionResponse
+                self?.postsArray?.posts?.forEach({ _ in self?.cellColors.append(self?.randomAndRemove() ?? .white) })
+                self?.collectionView.reloadData()
             }
-        } else {
-            print("Show error saying there is no file")
         }
+        
         
     }
     

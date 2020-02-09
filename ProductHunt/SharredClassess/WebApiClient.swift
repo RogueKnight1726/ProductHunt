@@ -14,7 +14,6 @@ class WebApiClient: NSObject {
 
 
     public static var shared = WebApiClient()
-    var cookieArray: [HTTPCookie]!
     
     func requestApi(with url: URL,method: HTTPMethod, params: [String: Any]?,completion: @escaping (_ error: String?,_ success: Bool,_ data: Data?) -> Void) {
         
