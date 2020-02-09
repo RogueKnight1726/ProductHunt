@@ -33,6 +33,13 @@ extension UIColor{
         static let cellThreeColor = UIColor(red:0.94, green:0.68, blue:0.44, alpha:1.0)
         static let cellFourColor = UIColor(red:0.75, green:0.75, blue:0.82, alpha:1.0)
         static let replyCellBackgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
+        static let makerColor = UIColor(red:0.63, green:0.38, blue:0.99, alpha:1.0)
+        
+        
+        
+        //Colors for the graphics
+        static let waveOneColor = UIColor(red:0.98, green:0.81, blue:0.66, alpha:1.0)
+        static let waveTwoCOlor = UIColor(red:0.76, green:0.24, blue:0.20, alpha:0.4)
     }
 }
 

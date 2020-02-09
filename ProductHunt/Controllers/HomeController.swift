@@ -23,13 +23,16 @@ class HomeController: BaseController{
     weak var selectionDelegate: PostSelectionProtocol?
     var calendarIcon: UIImageView!
     
+    var fetchingData: UILabel!
     
     var daySelectionDescriptionLabel: UILabel!
     var dayPickerHolder: BaseView?
     let dismissView = UIView()
-    var pickerView: UIPickerView!
+    var pickerView: UIDatePicker!
     
     var requestQueue = [String]()
+    
+    var selectedDate = ""
     
     var selectedDayOffset = 0 {
         didSet{
@@ -49,6 +52,8 @@ class HomeController: BaseController{
     
     
     func getData(){
+        
+        fetchingData.isHidden = false
         
         if !Connectivity.isConnectedToInternet{
             readOfflineFileData()
@@ -73,6 +78,7 @@ class HomeController: BaseController{
             if !(self?.requestQueue.isEmpty ?? true){
                 if self?.requestQueue.last == id{
                     self?.requestQueue.removeAll()
+                    self?.fetchingData.isHidden = true
                     if !success {
                         self?.onFailureListener(errorMessage: "Oops something went wrong", response: false)
                         return
@@ -120,7 +126,23 @@ class HomeController: BaseController{
         } catch let error {
             print("Error:  \(error)")
         }
+    }
+    
+    @objc func dateValueChanged(sender: UIDatePicker){
+        print(sender.date)
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.init(identifier: "UTC")
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        selectedDate = "Posts from \(dateFormatter.string(from: sender.date))"
         
+        selectedDayOffset = differenceBetween(fromDate: sender.date, toDate: Date())
+    }
+    
+    func differenceBetween(fromDate: Date, toDate : Date) -> Int
+    {
+        var currentCalendar = Calendar.current
+        currentCalendar.timeZone = TimeZone.init(identifier: "UTC")!
+        return currentCalendar.dateComponents([.day], from: fromDate, to: toDate).day ?? 0
     }
     
     
@@ -153,7 +175,7 @@ class HomeController: BaseController{
         daySelectionDescriptionLabel.textColor = .gray
         daySelectionDescriptionLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         
-        pickerView = UIPickerView()
+        pickerView = UIDatePicker()
         dayPickerHolder?.addSubview(pickerView)
         pickerView.translatesAutoresizingMaskIntoConstraints = false
         [pickerView.leftAnchor.constraint(equalTo: dayPickerHolder!.leftAnchor, constant: 16), //force unwrapped for as initiated just above.
@@ -162,8 +184,10 @@ class HomeController: BaseController{
          pickerView.heightAnchor.constraint(equalToConstant: 240)].forEach({$0.isActive = true})
         pickerView.setValue(UIColor.black, forKey: "textColor")
         pickerView.setValue(UIColor.white, forKey: "backgroundColor")
-        pickerView.delegate = self
-        pickerView.dataSource = self
+        pickerView.datePickerMode = .date
+        pickerView.timeZone = TimeZone.init(identifier: "UTC")
+        pickerView.maximumDate = Date()
+        pickerView.addTarget(self, action: #selector(dateValueChanged(sender:)), for: .valueChanged)
         
         
     }
@@ -195,6 +219,7 @@ extension HomeController: DataResponseListener{
     func onSuccessListener(response: Any, codableResponse: Data) {
         let decoder = JSONDecoder()
         do {
+            postHeadline.text = (selectedDayOffset == 0) ? "Today's posts" : "Posts from \(selectedDate)"
             if selectedDayOffset == 0 {
                 saveDataToLocal(data: codableResponse)
             }
@@ -212,29 +237,6 @@ extension HomeController: DataResponseListener{
     
     
 }
-
-
-extension HomeController: UIPickerViewDelegate,UIPickerViewDataSource{
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return 4
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if row == 0{
-            return "Today"
-        }
-        return "\(row) \((row > 1) ? "Days ago" : "Day ago")"
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedDayOffset = row
-    }
-}
-
 
 
 
@@ -274,6 +276,17 @@ extension HomeController{
         
         
         guide = view.safeAreaLayoutGuide
+        
+        fetchingData = UILabel()
+        view.addSubview(fetchingData)
+        fetchingData.translatesAutoresizingMaskIntoConstraints = false
+        [fetchingData.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0),
+         fetchingData.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0)].forEach({$0.isActive = true})
+        fetchingData.text = "Fetching data..."
+        fetchingData.textColor = .black
+        fetchingData.font = UIFont.systemFont(ofSize: 13, weight: .light)
+        fetchingData.isHidden = true
+        
         greetingsLabel = UILabel()
         view.addSubview(greetingsLabel)
         greetingsLabel.translatesAutoresizingMaskIntoConstraints = false

@@ -53,7 +53,14 @@ class SearchController: BaseController{
             filteredList.append(contentsOf: matchingCases)
         }
         if let matchingCases = postsArray?.posts?.filter({ $0.tagline?.lowercased().contains(searchText.lowercased()) ?? false}){
-            filteredList.append(contentsOf: matchingCases)
+            
+            //This is added just to avoid duplicate copies. Else the previous higherorder function could have been used here.
+            for postObject in matchingCases{
+                if !filteredList.contains(where: {$0.id == postObject.id}){
+                    filteredList.append(postObject)
+                }
+            }
+            
         }
         UIView.performWithoutAnimation {
             let contentOffset = self.collectionView.contentOffset.y

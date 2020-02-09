@@ -17,11 +17,14 @@ class ThreadReplyCell: UICollectionViewCell{
     var upvoteLabel: UILabel!
     var upvoteCount = 0
     var seperator: UIView!
+    var creatorView : BaseView!
+    var creatorLabel: UILabel!
     var model: Comment?{
         didSet{
             contentLabel.text = model?.body ?? ""
             upvoteLabel.text = "Upvotes (\(model?.votes ?? upvoteCount))"
             usernameLabel.text = model?.user?.name ?? ""
+            creatorView.isHidden = !(model?.maker ?? false)
             self.backgroundColor = (model?.isParentComment ?? false) ? .white : UIColor.AppTheme.replyCellBackgroundColor
             avatarImageView.kf.setImage(
                 with: URL.init(string: model?.user?.image_url?.url ?? ""),
@@ -94,16 +97,36 @@ extension ThreadReplyCell{
         usernameLabel.numberOfLines = 1
         usernameLabel.lineBreakMode = .byTruncatingTail
         usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        
+        
+        
+        creatorView = BaseView.init(with: UIColor.AppTheme.makerColor, circular: false, shadow: false, borderColor: nil, borderThickness: nil)
+        self.addSubview(creatorView)
+        creatorView.translatesAutoresizingMaskIntoConstraints = false
+        [creatorView.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 4),
+         creatorView.leftAnchor.constraint(equalTo: usernameLabel.leftAnchor, constant: 0)].forEach({$0.isActive = true})
+        
+        creatorLabel = UILabel()
+        self.addSubview(creatorLabel)
+        creatorLabel.translatesAutoresizingMaskIntoConstraints = false
+        [creatorLabel.leftAnchor.constraint(equalTo: creatorView.leftAnchor, constant: 16),
+         creatorLabel.rightAnchor.constraint(equalTo: creatorView.rightAnchor, constant: -16),
+         creatorLabel.topAnchor.constraint(equalTo: creatorView.topAnchor, constant: 4),
+         creatorLabel.bottomAnchor.constraint(equalTo: creatorView.bottomAnchor, constant: -4)].forEach({$0.isActive = true})
+        creatorLabel.text = "MAKER"
+        creatorLabel.font = UIFont.systemFont(ofSize: 9, weight: .light)
+        creatorLabel.textColor = .white
 
 
 
         contentLabel.translatesAutoresizingMaskIntoConstraints = false
         [contentLabel.leftAnchor.constraint(equalTo: avatarImageView.rightAnchor, constant: 16),
-         contentLabel.topAnchor.constraint(equalTo: avatarImageView.centerYAnchor, constant: 4),
+         contentLabel.topAnchor.constraint(equalTo: creatorView.bottomAnchor, constant: 4),
          contentLabel.widthAnchor.constraint(equalToConstant: self.bounds.width - 132)].forEach({$0.isActive = true})
         contentLabel.textColor = .black
         contentLabel.numberOfLines = -1
         contentLabel.font = UIFont.systemFont(ofSize: 13, weight: .light)
+        
         
         
         upvoteLabel.translatesAutoresizingMaskIntoConstraints = false

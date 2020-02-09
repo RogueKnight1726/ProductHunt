@@ -14,6 +14,13 @@ class SearchCollectionCell: UICollectionViewCell{
         didSet{
             nameLabel.text = model.name ?? ""
             tagLineLabel.text = model.tagline ?? ""
+            if let makers = model?.makers{
+                if makers.count > 1{
+                    makerNameLabel.text = makers.first?.name ?? ""
+                } else {
+                    makerNameLabel.text = (makers.first?.name ?? "Unknown") + " and \(makers.count) \(makers.count == 1 ? "other" : "others")"
+                }
+            }
             thumbnailImageView.kf.setImage(
                 with: URL.init(string: model?.thumbnail?.image_url ?? ""),
                 placeholder: nil,
@@ -37,6 +44,7 @@ class SearchCollectionCell: UICollectionViewCell{
     var tagLineLabel: UILabel!
     var makerThumbnail: UIImageView!
     var seperator: UIView!
+    var makerNameLabel: UILabel!
     
     
     override init(frame: CGRect) {
@@ -77,9 +85,10 @@ extension SearchCollectionCell{
         self.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         [nameLabel.leftAnchor.constraint(equalTo: thumbnailImageView.rightAnchor, constant: 16),
-         nameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 16)].forEach({$0.isActive = true})
+         nameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
+         nameLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -16)].forEach({$0.isActive = true})
         nameLabel.textColor = .black
-        nameLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        nameLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         
         tagLineLabel = UILabel()
         self.addSubview(tagLineLabel)
@@ -97,9 +106,17 @@ extension SearchCollectionCell{
          makerThumbnail.topAnchor.constraint(equalTo: tagLineLabel.bottomAnchor, constant: 8),
          makerThumbnail.heightAnchor.constraint(equalToConstant: 40),
          makerThumbnail.widthAnchor.constraint(equalToConstant: 40)].forEach({$0.isActive = true})
-        makerThumbnail.backgroundColor = .darkGray
+        makerThumbnail.backgroundColor = .lightGray
         makerThumbnail.layer.cornerRadius = 20
         makerThumbnail.clipsToBounds = true
+        
+        makerNameLabel = UILabel()
+        self.addSubview(makerNameLabel)
+        makerNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        [makerNameLabel.leftAnchor.constraint(equalTo: makerThumbnail.rightAnchor, constant: 16),
+         makerNameLabel.centerYAnchor.constraint(equalTo: makerThumbnail.centerYAnchor, constant: 0)].forEach({$0.isActive = true})
+        makerNameLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        makerNameLabel.textColor = .gray
         
         
         

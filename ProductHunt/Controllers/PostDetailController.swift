@@ -14,7 +14,7 @@ class PostDetailController: BaseController{
     
     var layout: UICollectionViewFlowLayout!
     var collectionView: UICollectionView!
-    var avatarWebView: UIImageView!
+    var avatarImageView: UIImageView!
     var pageNumber = 1
     let pageSize = 5
     var model: Post!
@@ -148,16 +148,16 @@ extension PostDetailController{
         noDataAvailableLabel.font = UIFont.systemFont(ofSize: 27, weight: .ultraLight)
         noDataAvailableLabel.isHidden = true
         
-        avatarWebView = UIImageView()
-        view.addSubview(avatarWebView)
-        avatarWebView.translatesAutoresizingMaskIntoConstraints = false
-        [avatarWebView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
-         avatarWebView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
-         avatarWebView.widthAnchor.constraint(equalToConstant: 80),
-         avatarWebView.heightAnchor.constraint(equalToConstant: 80)].forEach({$0.isActive = true})
-        avatarWebView.layer.cornerRadius = 40
-        avatarWebView.clipsToBounds = true
-        avatarWebView.kf.setImage(
+        avatarImageView = UIImageView()
+        view.addSubview(avatarImageView)
+        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
+        [avatarImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
+         avatarImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
+         avatarImageView.widthAnchor.constraint(equalToConstant: 80),
+         avatarImageView.heightAnchor.constraint(equalToConstant: 80)].forEach({$0.isActive = true})
+        avatarImageView.layer.cornerRadius = 40
+        avatarImageView.clipsToBounds = true
+        avatarImageView.kf.setImage(
             with: URL.init(string: model?.thumbnail?.image_url ?? ""),
             placeholder: nil,
             options: [.transition(.fade(0)), .loadDiskFileSynchronously],
@@ -170,8 +170,9 @@ extension PostDetailController{
         let postTitlelabel = UILabel()
         view.addSubview(postTitlelabel)
         postTitlelabel.translatesAutoresizingMaskIntoConstraints = false
-        [postTitlelabel.leftAnchor.constraint(equalTo: avatarWebView.rightAnchor, constant: 8),
-         postTitlelabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 16)].forEach({$0.isActive = true})
+        [postTitlelabel.leftAnchor.constraint(equalTo: avatarImageView.rightAnchor, constant: 8),
+         postTitlelabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
+         postTitlelabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8)].forEach({$0.isActive = true})
         postTitlelabel.text =  model.name ?? ""
         postTitlelabel.lineBreakMode = .byTruncatingTail
         postTitlelabel.textColor = .black
@@ -196,7 +197,7 @@ extension PostDetailController{
         [seperator.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
          seperator.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
          seperator.heightAnchor.constraint(equalToConstant: 1),
-         seperator.topAnchor.constraint(equalTo: avatarWebView.bottomAnchor, constant: 16)].forEach({$0.isActive = true})
+         seperator.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 16)].forEach({$0.isActive = true})
         seperator.alpha = 0.2
         
         
