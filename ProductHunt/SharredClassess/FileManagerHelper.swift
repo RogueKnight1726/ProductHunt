@@ -28,7 +28,7 @@ class FileManagerHelper{
                 completion(false,nil)
             }
         } else {
-            print("Show error saying there is no file")
+            completion(false,nil)
         }
     }
     

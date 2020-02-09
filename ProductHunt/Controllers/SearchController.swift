@@ -16,6 +16,7 @@ class SearchController: BaseController{
     var collectionView: UICollectionView!
     var postsArray: PostCollection?
     weak var selectionDelegate: PostSelectionProtocol?
+    var fileExistsInDirectory = false //This flag is added to handle in cases where the first time app launch after install, the filteredList was not fetched properly from the documentdirectory. A cleaner fix would exists somewhere else in the universe.
     var filteredList: [Post] = []{
         didSet{
             collectionView.isHidden = filteredList.isEmpty
@@ -38,9 +39,12 @@ class SearchController: BaseController{
     func getSavedData(){
         FileManagerHelper.shared.readOfflineData { [weak self] (success, collectionResponse) in
             if success{
+                self?.fileExistsInDirectory = true
                 self?.postsArray = collectionResponse
                 
                 self?.collectionView.reloadData()
+            } else {
+                self?.fileExistsInDirectory = false
             }
         }
     }
@@ -162,6 +166,9 @@ extension SearchController: UICollectionViewDelegate, UICollectionViewDataSource
 
 extension SearchController: UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if !fileExistsInDirectory{
+            getSavedData()
+        }
         filterPosts(with: searchText)
     }
 }
