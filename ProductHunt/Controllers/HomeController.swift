@@ -219,7 +219,7 @@ extension HomeController: DataResponseListener{
     func onSuccessListener(response: Any, codableResponse: Data) {
         let decoder = JSONDecoder()
         do {
-            postHeadline.text = (selectedDayOffset == 0) ? "Today's posts" : "Posts from \(selectedDate)"
+            postHeadline.text = (selectedDayOffset == 0) ? "Today's posts" : "\(selectedDate)"
             if selectedDayOffset == 0 {
                 saveDataToLocal(data: codableResponse)
             }
