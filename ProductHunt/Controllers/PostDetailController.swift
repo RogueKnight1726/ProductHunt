@@ -14,7 +14,7 @@ class PostDetailController: BaseController{
     
     var layout: UICollectionViewFlowLayout!
     var collectionView: UICollectionView!
-    var avatarWebView: WKWebView!
+    var avatarWebView: UIImageView!
     var pageNumber = 1
     let pageSize = 5
     var model: Post!
@@ -148,19 +148,23 @@ extension PostDetailController{
         noDataAvailableLabel.font = UIFont.systemFont(ofSize: 27, weight: .ultraLight)
         noDataAvailableLabel.isHidden = true
         
-        avatarWebView = WKWebView()
+        avatarWebView = UIImageView()
         view.addSubview(avatarWebView)
         avatarWebView.translatesAutoresizingMaskIntoConstraints = false
         [avatarWebView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
          avatarWebView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
          avatarWebView.widthAnchor.constraint(equalToConstant: 80),
          avatarWebView.heightAnchor.constraint(equalToConstant: 80)].forEach({$0.isActive = true})
-        avatarWebView.scrollView.isScrollEnabled = false
         avatarWebView.layer.cornerRadius = 40
         avatarWebView.clipsToBounds = true
-        if let url = URL.init(string: model?.thumbnail?.image_url ?? "") {
-            avatarWebView.load(URLRequest.init(url: url))
-        }
+        avatarWebView.kf.setImage(
+            with: URL.init(string: model?.thumbnail?.image_url ?? ""),
+            placeholder: nil,
+            options: [.transition(.fade(0)), .loadDiskFileSynchronously],
+            progressBlock: { receivedSize, totalSize in
+        },
+            completionHandler: { _ in
+        })
         
         
         let postTitlelabel = UILabel()
