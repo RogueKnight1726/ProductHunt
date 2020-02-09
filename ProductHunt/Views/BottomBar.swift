@@ -83,7 +83,7 @@ extension BottomBar: UICollectionViewDelegate, UICollectionViewDataSource{
 enum BottomBarItems: String{
     case Home = "bottomHomeImage"
     case Search = "search"
-    case AboutMe = "aboutMe"
+    case AboutMe = "AboutMe"
 }
 
 
